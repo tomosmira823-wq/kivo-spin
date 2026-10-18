@@ -13,16 +13,12 @@ Results are saved next to the original (or a folder you pick). Originals are nev
 
 ### Option A – GitHub (recommended, also turns on auto-updates)
 1. Create a **public** GitHub repo (e.g. `kivo-spin`) and push this folder to it.
-2. Tag a version and push it:
-   ```
-   git tag v1.0.0
-   git push origin v1.0.0
-   ```
+2. Put the version number in the `VERSION` file (e.g. `1.0.4`) and push to `main`.
 3. The **Build & release** action builds everything and publishes a Release containing
    `KivoSpin-win-Setup.exe`. That's the file customers download.
 
 Every installed copy checks the repo's Releases 20 s after starting and then every 4 hours.
-To ship an update: edit `RELEASE_NOTES.md`, bump the tag (`v1.0.1`), push. Users get a
+To ship an update: edit `RELEASE_NOTES.md`, bump `VERSION`, push. Users get a
 "Kivo Spin 1.0.1 is ready – Restart now / Later" notice (or it installs itself if they turned on
 *Install updates automatically*). If they pick Later, it installs when they quit.
 

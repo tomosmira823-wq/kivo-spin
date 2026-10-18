@@ -1,15 +1,16 @@
 name: Build & release Kivo Spin
 
-# Push a tag like v1.0.0 to build the installer and publish a GitHub Release.
-# Installed copies of Kivo Spin check this repo's Releases and update themselves.
+# Change the number in VERSION (e.g. 1.0.4) and push to main: this builds the installer and
+# publishes a GitHub Release. Installed copies of Kivo Spin check Releases and update themselves.
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: ['VERSION']
   workflow_dispatch:
     inputs:
       version:
         description: 'Version to release (e.g. 1.0.1)'
-        required: true
+        required: false
 
 permissions:
   contents: write
@@ -29,7 +30,7 @@ jobs:
         shell: pwsh
         run: |
           $v = "${{ github.event.inputs.version }}"
-          if (-not $v) { $v = "${{ github.ref_name }}".TrimStart('v') }
+          if (-not $v) { $v = (Get-Content VERSION -Raw).Trim() }
           if ($v -notmatch '^\d+\.\d+\.\d+') { throw "Version '$v' must look like 1.2.3" }
           "version=$v" >> $env:GITHUB_OUTPUT
 
