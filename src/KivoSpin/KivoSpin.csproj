@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>KivoSpin</AssemblyName>
+    <RootNamespace>KivoSpin</RootNamespace>
+    <StartupObject>KivoSpin.Program</StartupObject>
+    <ApplicationIcon>Assets\KivoSpin.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>1.0.0</Version>
+    <Product>Kivo Spin</Product>
+    <Company>Kivo</Company>
+    <Copyright>© Kivo</Copyright>
+    <Description>Kivo Spin – drag a file, hold Shift, spin to convert.</Description>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
+    <SelfContained>true</SelfContained>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <NoWarn>$(NoWarn);CS0168;CS0219;CS0649;CS8632;CA1416;NU1603;NU1701</NoWarn>
+    <!-- Set by the release workflow: -p:UpdateRepo=https://github.com/owner/repo -->
+    <UpdateRepo Condition="'$(UpdateRepo)' == ''"></UpdateRepo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="UpdateRepo" Value="$(UpdateRepo)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Magick.NET-Q8-x64" Version="14.*" />
+    <PackageReference Include="Docnet.Core" Version="2.6.0" />
+    <PackageReference Include="PDFsharp" Version="6.1.1" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.*" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.*" />
+    <PackageReference Include="Velopack" Version="0.0.1298" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\KivoSpin.ico" />
+    <Resource Include="Assets\Michroma-Regular.ttf" />
+    <None Remove="Assets\icon-1024.png" />
+  </ItemGroup>
+
+</Project>

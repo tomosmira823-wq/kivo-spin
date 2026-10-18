@@ -1,0 +1,66 @@
+name: Build & release Kivo Spin
+
+# Push a tag like v1.0.0 to build the installer and publish a GitHub Release.
+# Installed copies of Kivo Spin check this repo's Releases and update themselves.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 1.0.1)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Work out version
+        id: ver
+        shell: pwsh
+        run: |
+          $v = "${{ github.event.inputs.version }}"
+          if (-not $v) { $v = "${{ github.ref_name }}".TrimStart('v') }
+          if ($v -notmatch '^\d+\.\d+\.\d+') { throw "Version '$v' must look like 1.2.3" }
+          "version=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Publish app
+        shell: pwsh
+        run: >
+          dotnet publish src/KivoSpin/KivoSpin.csproj -c Release -r win-x64 --self-contained true -o publish
+          -p:Version=${{ steps.ver.outputs.version }}
+          -p:UpdateRepo=https://github.com/${{ github.repository }}
+
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk --version 0.0.1298
+
+      - name: Fetch previous release (for small delta updates)
+        continue-on-error: true
+        run: vpk download github --repoUrl https://github.com/${{ github.repository }} --token ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build installer
+        run: >
+          vpk pack --packId KivoSpin --packVersion ${{ steps.ver.outputs.version }} --packDir publish
+          --mainExe KivoSpin.exe --runtime win-x64 --packTitle "Kivo Spin" --packAuthors "Kivo"
+          --icon src/KivoSpin/Assets/KivoSpin.ico --releaseNotes RELEASE_NOTES.md
+
+      - name: Keep the installer as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KivoSpin-${{ steps.ver.outputs.version }}
+          path: Releases/
+
+      - name: Publish GitHub Release
+        run: >
+          vpk upload github --repoUrl https://github.com/${{ github.repository }} --publish
+          --releaseName "Kivo Spin ${{ steps.ver.outputs.version }}" --tag v${{ steps.ver.outputs.version }}
+          --token ${{ secrets.GITHUB_TOKEN }}
